@@ -10,6 +10,11 @@ class AllSpider(scrapy.Spider):
     start_urls = ['http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/index.html']
 
     def parse(self, response):
+        """
+        抓取首页行政区划中省份数据
+        :param response:
+        :return:
+        """
         hrefs = []
 
         for tr in response.xpath("//tr[@class='provincetr']"):
@@ -30,6 +35,11 @@ class AllSpider(scrapy.Spider):
 
     @staticmethod
     def code2url(origin):
+        """
+        根据区划代码生成对应的url
+        :param origin:
+        :return:
+        """
         code = origin
         n = ''
         while len(code) > 2:
@@ -39,6 +49,11 @@ class AllSpider(scrapy.Spider):
         return n + origin + '.html'
 
     def parse_city(self, response):
+        """
+        抓取行政区划中城市数据
+        :param response:
+        :return:
+        """
         hrefs = []
         for tr in response.xpath("//tr[@class='citytr']"):
             td = tr.xpath("./td")[1]
@@ -62,6 +77,11 @@ class AllSpider(scrapy.Spider):
             yield scrapy.Request(href, callback=self.parse_county, dont_filter=True)
 
     def parse_county(self, response):
+        """
+        抓取行政区划中区/县数据
+        :param response:
+        :return:
+        """
         hrefs = []
         for tr in response.xpath("//tr[@class='countytr']"):
             td = tr.xpath("./td")[1]
@@ -84,6 +104,11 @@ class AllSpider(scrapy.Spider):
             yield scrapy.Request(href, callback=self.parse_town, dont_filter=True)
 
     def parse_town(self, response):
+        """
+        抓取行政区划中街道/乡镇数据
+        :param response:
+        :return:
+        """
         for tr in response.xpath("//tr[@class='towntr']"):
             td = tr.xpath("./td")[1]
 
